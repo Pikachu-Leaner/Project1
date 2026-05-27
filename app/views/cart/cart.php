@@ -31,13 +31,17 @@
                             <?= number_format($item['price'], 0, ',', '.') ?> ₫
                         </td>
                         <td class="text-center">
-                            <span class="badge bg-secondary px-3 py-2 fs-6 rounded-pill"><?= $item['quantity'] ?></span>
+                            <div class="d-flex justify-content-center align-items-center gap-2">
+                                <a href="<?= BASE_URL ?>Cart/update/<?= $item['id'] ?>/decrease" class="btn btn-sm btn-outline-secondary fw-bold px-2">-</a>
+                                <span class="fw-bold" style="min-width: 25px;"><?= $item['quantity'] ?></span>
+                                <a href="<?= BASE_URL ?>Cart/update/<?= $item['id'] ?>/increase" class="btn btn-sm btn-outline-secondary fw-bold px-2">+</a>
+                            </div>
                         </td>
                         <td class="text-center text-danger fw-bold fs-5">
                             <?= number_format($subtotal, 0, ',', '.') ?> ₫
                         </td>
                         <td class="text-center">
-                            <a href="/Cart/remove/<?= $item['id'] ?>" class="btn btn-outline-danger btn-sm" onclick="return confirm('Xóa sản phẩm này khỏi giỏ hàng?');">
+                            <a href="<?= BASE_URL ?>Cart/remove/<?= $item['id'] ?>" class="btn btn-outline-danger btn-sm" onclick="return confirm('Xóa sản phẩm này khỏi giỏ hàng?');">
                                 <i class="fas fa-trash"></i>
                             </a>
                         </td>
@@ -48,7 +52,7 @@
         </div>
 
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center pt-3 border-top">
-            <a href="/Product/list" class="btn btn-outline-secondary mb-3 mb-md-0 fw-bold">
+            <a href="<?= BASE_URL ?>Product/list" class="btn btn-outline-secondary mb-3 mb-md-0 fw-bold">
                 <i class="fas fa-arrow-left me-2"></i>Tiếp tục mua sắm
             </a>
             
@@ -60,12 +64,11 @@
                 </button>
             </div>
         </div>
-
     <?php else: ?>
         <div class="text-center py-5">
-            <i class="fas fa-box-open text-muted" style="font-size: 64px;"></i>
-            <h4 class="text-muted mt-3 mb-4">Giỏ hàng của bạn đang trống.</h4>
-            <a href="/Product/list" class="btn btn-primary btn-lg px-4 rounded-pill fw-bold shadow-sm">
+            <i class="fas fa-box-open text-muted mb-3" style="font-size: 64px;"></i>
+            <h4 class="text-muted mb-4">Giỏ hàng của bạn đang trống.</h4>
+            <a href="<?= BASE_URL ?>Product/list" class="btn btn-primary btn-lg px-4 rounded-pill fw-bold shadow-sm">
                 <i class="fas fa-arrow-left me-2"></i>Quay lại mua sắm
             </a>
         </div>

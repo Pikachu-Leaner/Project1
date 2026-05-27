@@ -8,10 +8,10 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Tính tổng số lượng sản phẩm trong giỏ hàng để hiển thị lên Header
+// CẬP NHẬT LẠI: Chỉ đếm số lượng các sản phẩm khác biệt (Unique items)
 $cartCount = 0;
 if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
-    $cartCount = array_sum($_SESSION['cart']);
+    $cartCount = count(array_keys($_SESSION['cart']));
 }
 
 // Xử lý đường dẫn cho Windows Laragon
@@ -170,7 +170,7 @@ $viewContent = ob_get_clean();
                 ];
                 
                 foreach ($brands as $brandName => $colorClass): 
-                    $isActive = ($currentBrand === $brandName) ? 'active text-primary' : ''; // Xóa gạch chân CSS
+                    $isActive = ($currentBrand === $brandName) ? 'active text-primary' : ''; 
                 ?>
                     <a href="<?= BASE_URL . $currentRoute ?>?brand=<?= urlencode($brandName) ?>&sort=<?= $currentSort ?>#shop-section" 
                        class="filter-btn fw-bold text-decoration-none <?= $colorClass ?> <?= $isActive ?>">
@@ -178,51 +178,15 @@ $viewContent = ob_get_clean();
                     </a>
                 <?php endforeach; ?>
             </div>
-            <?php endif; ?>
+        <?php endif; ?>
 
         <?= $viewContent; ?>
 
     </main>
 
     <footer class="footer-main mt-5 border-top bg-white pt-4 pb-3">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-3">
-                    <h6 class="fw-bold mb-3">Tổng đài hỗ trợ</h6>
-                    <ul class="list-unstyled footer-links fs-8">
-                        <li>Gọi mua: <a href="tel:1900232460" class="text-primary fw-bold">1900 232 460</a> (8:00 - 21:30)</li>
-                        <li>Khiếu nại: <a href="tel:18001062" class="text-primary fw-bold">1800.1062</a> (8:00 - 21:30)</li>
-                        <li>Bảo hành: <a href="tel:1900232464" class="text-primary fw-bold">1900 232 464</a> (8:00 - 21:00)</li>
-                    </ul>
-                </div>
-                <div class="col-md-3">
-                    <h6 class="fw-bold mb-3">Về công ty</h6>
-                    <ul class="list-unstyled footer-links fs-8">
-                        <li><a href="#">Giới thiệu công ty</a></li>
-                        <li><a href="#">Tuyển dụng</a></li>
-                        <li><a href="#">Gửi góp ý, khiếu nại</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-3">
-                    <h6 class="fw-bold mb-3">Thông tin khác</h6>
-                    <ul class="list-unstyled footer-links fs-8">
-                        <li><a href="#">Tích điểm Quà tặng VIP</a></li>
-                        <li><a href="#">Lịch sử mua hàng</a></li>
-                        <li><a href="#">Chính sách bảo hành</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-3">
-                    <h6 class="fw-bold mb-3">Kết nối với chúng tôi</h6>
-                    <div class="d-flex gap-3 align-items-center mb-2">
-                        <a href="#" class="text-decoration-none text-primary"><i class="fab fa-facebook fs-4"></i> 3886.8k Fan</a>
-                        <a href="#" class="text-decoration-none text-danger"><i class="fab fa-youtube fs-4"></i> 876k Đăng ký</a>
-                    </div>
-                </div>
-            </div>
-            <hr>
-            <div class="text-muted text-center" style="font-size: 11px;">
-                <p class="mb-1">© 2024. Cửa hàng điện thoại. Dự án PHP MVC trên Laragon.</p>
-            </div>
+        <div class="container text-center text-muted" style="font-size: 13px;">
+            <p class="mb-1">© 2024. Cửa hàng điện thoại. Dự án PHP MVC trên Laragon.</p>
         </div>
     </footer>
 
@@ -237,7 +201,7 @@ $viewContent = ob_get_clean();
                 if(shopSection) {
                     shopSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
-            }, 50); // Chờ 50ms để DOM vẽ xong trước khi cuộn
+            }, 50);
         }
     });
     </script>
