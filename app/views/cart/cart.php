@@ -59,9 +59,10 @@
             <div class="text-md-end text-center bg-light p-4 rounded shadow-sm border">
                 <p class="text-muted mb-1 fs-6">Tổng thanh toán:</p>
                 <h2 class="text-danger fw-bold mb-3"><?= number_format($total, 0, ',', '.') ?> ₫</h2>
-                <button class="btn btn-danger btn-lg px-5 rounded-pill shadow fw-bold w-100">
+                
+                <a href="<?= BASE_URL ?>Order/checkout" class="btn btn-danger btn-lg px-5 rounded-pill shadow fw-bold w-100 text-decoration-none">
                     TIẾN HÀNH ĐẶT HÀNG
-                </button>
+                </a>
             </div>
         </div>
     <?php else: ?>
