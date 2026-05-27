@@ -65,3 +65,11 @@ INSERT INTO products (name, category_id, brand, price, old_price, image_url, det
 ('Samsung Galaxy S24 Ultra 5G', 1, 'SAMSUNG', 31990000, 33990000, 'public/images/Phone-card-image-1.jpg', 'Cấu hình mạnh mẽ...', 150, TRUE),
 ('iPhone 15 Pro Max 256GB', 1, 'iPhone', 34990000, 36990000, 'public/images/Phone-card-image-2.jpg', 'Siêu phẩm Apple...', 500, TRUE),
 ('Xiaomi 14 5G', 1, 'xiaomi', 22990000, 24490000, 'public/images/Phone-card-image-3.jpg', 'Công nghệ hàng đầu...', 120, TRUE);
+INSERT INTO products (name, category_id, brand, price, old_price, image_url, details, sales_count, is_featured) VALUES 
+('OPPO Reno11 F 5G', 1, 'OPPO', 8990000, NULL, 'public/images/Phone-card-image-4.jpg', 'Cấu hình...', 250, FALSE),
+('vivo V30 5G', 1, 'vivo', 13990000, 14500000, 'public/images/Phone-card-image-5.jpg', 'Cấu hình...', 90, FALSE),
+('realme 12 Pro+ 5G', 1, 'realme', 10990000, NULL, 'public/images/Phone-card-image-6.jpg', 'Cấu hình...', 110, FALSE),
+('HONOR Magic6 Pro 5G', 1, 'HONOR', 27990000, 29990000, 'public/images/Phone-card-image-7.jpg', 'Cấu hình...', 50, TRUE),
+('Motorola Edge 50 Pro 5G', 1, 'motorola', 14990000, NULL, 'public/images/Phone-card-image-8.jpg', 'Cấu hình...', 40, FALSE),
+('iPhone 13 128GB', 1, 'iPhone', 15990000, 17990000, 'public/images/Phone-card-image-9.jpg', 'Cấu hình...', 800, FALSE),
+('Samsung Galaxy A55 5G', 1, 'SAMSUNG', 10490000, NULL, 'public/images/Phone-card-image-10.jpg', 'Cấu hình...', 300, FALSE);
