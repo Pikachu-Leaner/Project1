@@ -30,6 +30,7 @@ $urlArray = array_values($urlArray);
 $currentBrand = isset($_GET['brand']) ? $_GET['brand'] : '';
 $currentCat = isset($_GET['category']) ? $_GET['category'] : '';
 $currentSort = isset($_GET['sort']) ? $_GET['sort'] : 'noi_bat';
+$currentSearch = isset($_GET['search']) ? $_GET['search'] : '';
 $currentRoute = !empty($url) ? $url : 'Product/list';
 
 $controllerName = isset($urlArray[0]) && $urlArray[0] !== '' ? ucfirst($urlArray[0]) . 'Controller' : 'ProductController'; 
@@ -37,22 +38,26 @@ $action = isset($urlArray[1]) && $urlArray[1] !== '' ? $urlArray[1] : 'index';
 $params = array_slice($urlArray, 2);
 
 $controllerFile = 'app/controllers/' . $controllerName . '.php';
-if (!file_exists($controllerFile)) { die("Lỗi 404: Không tìm thấy file Controller."); }
+if (!file_exists($controllerFile)) { die("<div class='p-4'><h1>Lỗi 404</h1><p>Không tìm thấy file Controller.</p></div>"); }
 require_once $controllerFile;
-if (!class_exists($controllerName)) { die("Lỗi hệ thống: Thiếu Class."); }
+if (!class_exists($controllerName)) { die("<div class='p-4'><h1>Lỗi hệ thống</h1><p>Thiếu Class Controller.</p></div>"); }
 
 $controller = new $controllerName();
 if (!method_exists($controller, $action)) {
     $action = 'list';
-    if (!method_exists($controller, $action)) { die("Lỗi 404: Không tìm thấy Action."); }
+    if (!method_exists($controller, $action)) { die("<div class='p-4'><h1>Lỗi 404</h1><p>Không tìm thấy Action.</p></div>"); }
 }
 
-// Lấy danh mục toàn cục cho Thanh Navigation đen
-$db = new Database();
-$conn = $db->getConnection();
-$stmtCat = $conn->prepare("SELECT * FROM categories ORDER BY id ASC");
-$stmtCat->execute();
-$globalCategories = $stmtCat->fetchAll(PDO::FETCH_ASSOC);
+// Lấy danh mục toàn cục cho Thanh Navigation đen (Sẽ gây lỗi nếu chưa chạy SQL trên Cloud)
+try {
+    $db = new Database();
+    $conn = $db->getConnection();
+    $stmtCat = $conn->prepare("SELECT * FROM categories ORDER BY id ASC");
+    $stmtCat->execute();
+    $globalCategories = $stmtCat->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    die("<div class='p-4 text-danger'><h1>Lỗi Database</h1><p>Vui lòng chạy script SQL để tạo bảng categories trên Cloud. Chi tiết: " . $e->getMessage() . "</p></div>");
+}
 
 // Xác định các trang cần ẩn thanh Navigation đen
 $hideNavLinks = false;
@@ -82,7 +87,13 @@ $viewContent = ob_get_clean();
 
     <header class="header-main py-2 shadow-sm border-bottom bg-white">
         <div class="container d-flex align-items-center justify-content-between">
-            <a href="<?= BASE_URL ?>"><img src="<?= BASE_URL ?>public/images/Store-image.png" class="store-logo" style="height: 40px;" alt="Logo"></a>
+            <a href="<?= BASE_URL ?>"><img src="<?= BASE_URL ?>public/images/Store-image.png" class="store-logo" style="height: 40px;" alt="Logo" onerror="this.src='https://via.placeholder.com/150x40?text=Logo'"></a>
+            
+            <form action="<?= BASE_URL ?>Product/list" method="GET" class="input-group w-50">
+                <input type="text" name="search" class="form-control search-input" placeholder="Tìm tên sản phẩm, hãng..." value="<?= htmlspecialchars($currentSearch) ?>">
+                <button class="btn search-btn" type="submit" style="border: 1px solid #ced4da; border-left: none;"><i class="fas fa-search text-muted"></i></button>
+            </form>
+
             <div class="d-flex align-items-center gap-3">
                 <a href="<?= BASE_URL ?>Order/history" class="text-dark text-decoration-none fs-7 fw-bold"><i class="fas fa-history me-1"></i> Lịch sử đơn hàng</a>
                 <a href="<?= BASE_URL ?>Cart/index" class="btn btn-dark text-white rounded-pill px-3 fs-7 shadow-sm position-relative">
@@ -128,7 +139,8 @@ $viewContent = ob_get_clean();
                 foreach ($brands as $brandName => $colorClass): 
                     $isActive = ($currentBrand === $brandName) ? 'active text-primary' : ''; 
                 ?>
-                    <a href="<?= BASE_URL . $currentRoute ?>?brand=<?= urlencode($brandName) ?>&sort=<?= $currentSort ?>#shop-section" class="filter-btn fw-bold text-decoration-none <?= $colorClass ?> <?= $isActive ?>"><?= htmlspecialchars($brandName) ?></a>
+                    <?php $searchParam = !empty($currentSearch) ? "&search=" . urlencode($currentSearch) : ""; ?>
+                    <a href="<?= BASE_URL . $currentRoute ?>?brand=<?= urlencode($brandName) ?>&sort=<?= $currentSort ?><?= $searchParam ?>#shop-section" class="filter-btn fw-bold text-decoration-none <?= $colorClass ?> <?= $isActive ?>"><?= htmlspecialchars($brandName) ?></a>
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
