@@ -1,6 +1,7 @@
 <?php
 $currSort = isset($_GET['sort']) ? $_GET['sort'] : 'noi_bat';
 $currBrand = isset($_GET['brand']) ? $_GET['brand'] : ''; 
+$currSearch = isset($_GET['search']) ? $_GET['search'] : '';
 ?>
 
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 bg-white p-3 rounded shadow-sm border border-light gap-3">
@@ -9,7 +10,10 @@ $currBrand = isset($_GET['brand']) ? $_GET['brand'] : '';
     <div class="d-flex align-items-center gap-3">
         <div class="d-flex align-items-center">
             <span class="text-muted small me-2 text-nowrap">Sắp xếp:</span>
-            <?php $baseParams = "?brand=" . urlencode($currBrand) . "&category=" . urlencode($_GET['category'] ?? '') . "&sort="; ?>
+            <?php 
+            $searchParam = !empty($currSearch) ? "&search=" . urlencode($currSearch) : "";
+            $baseParams = "?brand=" . urlencode($currBrand) . "&category=" . urlencode($_GET['category'] ?? '') . $searchParam . "&sort="; 
+            ?>
             <select class="form-select form-select-sm shadow-sm border-secondary" style="min-width: 150px; font-weight: bold;" onchange="window.location.href='<?= BASE_URL ?>Product/list<?= $baseParams ?>' + this.value + '#shop-section'">
                 <option value="noi_bat" <?= $currSort == 'noi_bat' ? 'selected' : '' ?>>Nổi bật</option>
                 <option value="ban_chay" <?= $currSort == 'ban_chay' ? 'selected' : '' ?>>Bán chạy</option>
@@ -28,13 +32,13 @@ $currBrand = isset($_GET['brand']) ? $_GET['brand'] : '';
 <div class="row g-4">
     <div class="col-md-3">
         <div class="list-group shadow-sm">
-            <a href="<?= BASE_URL ?>Product/list?sort=<?= $currSort ?>&brand=<?= urlencode($currBrand) ?>#shop-section" 
+            <a href="<?= BASE_URL ?>Product/list?sort=<?= $currSort ?>&brand=<?= urlencode($currBrand) ?><?= $searchParam ?>#shop-section" 
                class="list-group-item list-group-item-action fw-bold <?= empty($_GET['category']) ? 'active' : '' ?>">
                 Tất cả
             </a>
             <?php if(isset($categories)): ?>
                 <?php foreach ($categories as $category): ?>
-                    <a href="<?= BASE_URL ?>Product/list?category=<?= $category['id'] ?>&sort=<?= $currSort ?>&brand=<?= urlencode($currBrand) ?>#shop-section" 
+                    <a href="<?= BASE_URL ?>Product/list?category=<?= $category['id'] ?>&sort=<?= $currSort ?>&brand=<?= urlencode($currBrand) ?><?= $searchParam ?>#shop-section" 
                        class="list-group-item list-group-item-action fw-bold <?= (isset($_GET['category']) && $_GET['category'] == $category['id']) ? 'active' : '' ?>">
                         <?= htmlspecialchars($category['name']) ?>
                     </a>
