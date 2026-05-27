@@ -28,11 +28,11 @@ class CartController {
         } else {
             $_SESSION['cart'][$id]++;
         }
-        header("Location: /Cart/index");
+        // FIX: Thêm #cart-section để tránh nhảy trang
+        header("Location: /Cart/index#cart-section");
         exit;
     }
 
-    // MỚI: Xử lý Tăng / Giảm số lượng
     public function update($id, $action) {
         if (isset($_SESSION['cart'][$id])) {
             if ($action === 'increase') {
@@ -44,7 +44,8 @@ class CartController {
                 }
             }
         }
-        header("Location: /Cart/index");
+        // FIX: Thêm #cart-section để tránh nhảy trang
+        header("Location: /Cart/index#cart-section");
         exit;
     }
 
@@ -52,7 +53,8 @@ class CartController {
         if (isset($_SESSION['cart'][$id])) {
             unset($_SESSION['cart'][$id]);
         }
-        header("Location: /Cart/index");
+        // FIX: Thêm #cart-section
+        header("Location: /Cart/index#cart-section");
         exit;
     }
 }

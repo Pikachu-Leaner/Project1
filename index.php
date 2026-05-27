@@ -8,13 +8,11 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// CẬP NHẬT LẠI: Chỉ đếm số lượng các sản phẩm khác biệt (Unique items)
 $cartCount = 0;
 if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
     $cartCount = count(array_keys($_SESSION['cart']));
 }
 
-// Xử lý đường dẫn cho Windows Laragon
 $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
 $host = $_SERVER['HTTP_HOST'];
 $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])); 
@@ -30,12 +28,10 @@ $urlArray = explode('/', $url);
 $urlArray = array_filter($urlArray);
 $urlArray = array_values($urlArray);
 
-// Lấy tham số Brand và Sort từ URL
 $currentBrand = isset($_GET['brand']) ? $_GET['brand'] : '';
 $currentSort = isset($_GET['sort']) ? $_GET['sort'] : 'noi_bat';
 $currentRoute = !empty($url) ? $url : 'Product/list';
 
-// Định tuyến mặc định
 $controllerName = isset($urlArray[0]) && $urlArray[0] !== '' 
     ? ucfirst($urlArray[0]) . 'Controller' 
     : 'ProductController'; 
@@ -47,12 +43,12 @@ $action = isset($urlArray[1]) && $urlArray[1] !== ''
 $controllerFile = 'app/controllers/' . $controllerName . '.php';
 
 if (!file_exists($controllerFile)) {
-    die("<div style='padding:20px; font-family:sans-serif;'><h1>Lỗi 404</h1><p>Không tìm thấy file Controller: <b>{$controllerName}.php</b></p></div>");
+    die("<div style='padding:20px; font-family:sans-serif;'><h1>Lỗi 404</h1><p>Không tìm thấy file Controller.</p></div>");
 }
 require_once $controllerFile;
 
 if (!class_exists($controllerName)) {
-    die("<div style='padding:20px; font-family:sans-serif;'><h1>Lỗi hệ thống</h1><p>Tìm thấy file nhưng thiếu Class: <b>{$controllerName}</b></p></div>");
+    die("<div style='padding:20px; font-family:sans-serif;'><h1>Lỗi hệ thống</h1><p>Tìm thấy file nhưng thiếu Class.</p></div>");
 }
 
 $controller = new $controllerName();
@@ -60,7 +56,7 @@ $controller = new $controllerName();
 if (!method_exists($controller, $action)) {
     $action = 'list';
     if (!method_exists($controller, $action)) {
-        die("<div style='padding:20px; font-family:sans-serif;'><h1>Lỗi 404</h1><p>Không tìm thấy Action trong <b>{$controllerName}</b></p></div>");
+        die("<div style='padding:20px; font-family:sans-serif;'><h1>Lỗi 404</h1><p>Không tìm thấy Action.</p></div>");
     }
 }
 
@@ -94,7 +90,7 @@ $viewContent = ob_get_clean();
             
             <div class="input-group w-50">
                 <input type="text" class="form-control search-input" placeholder="Bạn tìm gì..." aria-label="Tìm kiếm sản phẩm">
-                <button class="btn search-btn" type="button" aria-label="Nút Tìm kiếm"><i class="fas fa-search text-muted"></i></button>
+                <button class="btn search-btn" type="button"><i class="fas fa-search text-muted"></i></button>
             </div>
 
             <div class="d-flex align-items-center gap-3">
@@ -123,11 +119,11 @@ $viewContent = ob_get_clean();
         </div>
     </nav>
 
-    <main class="container my-4" id="shop-section">
+    <main class="container my-4">
         
         <?php 
-        // BỘ LỌC VÀ CAROUSEL CHỈ HIỆN Ở TRANG CHỦ / DANH SÁCH
-        if($action == 'index' || $action == 'list'): 
+        // FIX: Chỉ hiện Bộ lọc và Carousel nếu ĐANG Ở TRANG SẢN PHẨM (Không hiện ở trang Giỏ hàng)
+        if($controllerName === 'ProductController' && ($action == 'index' || $action == 'list')): 
         ?>
             <div id="mainPromoCarousel" class="carousel slide custom-carousel mb-4 shadow" data-bs-ride="carousel">
                 <div class="carousel-inner">
@@ -159,14 +155,8 @@ $viewContent = ob_get_clean();
                 
                 <?php 
                 $brands = [
-                    'SAMSUNG' => '', 
-                    'iPhone' => '', 
-                    'xiaomi' => '', 
-                    'OPPO' => 'text-success', 
-                    'vivo' => 'text-primary', 
-                    'realme' => 'text-warning', 
-                    'HONOR' => '', 
-                    'motorola' => ''
+                    'SAMSUNG' => '', 'iPhone' => '', 'xiaomi' => '', 'OPPO' => 'text-success', 
+                    'vivo' => 'text-primary', 'realme' => 'text-warning', 'HONOR' => '', 'motorola' => ''
                 ];
                 
                 foreach ($brands as $brandName => $colorClass): 
@@ -195,11 +185,12 @@ $viewContent = ob_get_clean();
     
     <script>
     document.addEventListener("DOMContentLoaded", function() {
-        if(window.location.hash === "#shop-section") {
+        var hash = window.location.hash;
+        if(hash) {
             setTimeout(function() {
-                var shopSection = document.getElementById("shop-section");
-                if(shopSection) {
-                    shopSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                var targetSection = document.querySelector(hash);
+                if(targetSection) {
+                    targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             }, 50);
         }

@@ -1,4 +1,4 @@
-<div class="container py-4 bg-white rounded shadow-sm">
+<div class="container py-4 bg-white rounded shadow-sm" id="cart-section">
     <h3 class="fw-bold mb-4 text-primary"><i class="fas fa-shopping-cart me-2"></i>Giỏ hàng của bạn</h3>
     
     <?php if (!empty($cartItems)): ?>
