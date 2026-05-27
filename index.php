@@ -9,6 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Đếm số lượng sản phẩm khác nhau trong Giỏ hàng
 $cartCount = 0;
 if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
     $cartCount = count(array_keys($_SESSION['cart']));
@@ -48,7 +49,7 @@ if (!method_exists($controller, $action)) {
     if (!method_exists($controller, $action)) { die("<div class='p-4'><h1>Lỗi 404</h1><p>Không tìm thấy Action.</p></div>"); }
 }
 
-// Lấy danh mục toàn cục cho Thanh Navigation đen (Sẽ gây lỗi nếu chưa chạy SQL trên Cloud)
+// Lấy danh mục toàn cục cho Thanh Navigation đen
 try {
     $db = new Database();
     $conn = $db->getConnection();
@@ -56,7 +57,7 @@ try {
     $stmtCat->execute();
     $globalCategories = $stmtCat->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
-    die("<div class='p-4 text-danger'><h1>Lỗi Database</h1><p>Vui lòng chạy script SQL để tạo bảng categories trên Cloud. Chi tiết: " . $e->getMessage() . "</p></div>");
+    die("<div class='p-4 text-danger'><h1>Lỗi Database</h1><p>Không thể kết nối CSDL: " . $e->getMessage() . "</p></div>");
 }
 
 // Xác định các trang cần ẩn thanh Navigation đen
@@ -87,7 +88,7 @@ $viewContent = ob_get_clean();
 
     <header class="header-main py-2 shadow-sm border-bottom bg-white">
         <div class="container d-flex align-items-center justify-content-between">
-            <a href="<?= BASE_URL ?>"><img src="<?= BASE_URL ?>public/images/Store-image.png" class="store-logo" style="height: 40px;" alt="Logo" onerror="this.src='https://via.placeholder.com/150x40?text=Logo'"></a>
+            <a href="<?= BASE_URL ?>"><img src="<?= BASE_URL ?>public/images/Store-image.png" class="store-logo" style="height: 40px;" alt="Logo" onerror="this.src='https://via.placeholder.com/150x40/ffd400/333333?text=Logo'"></a>
             
             <form action="<?= BASE_URL ?>Product/list" method="GET" class="input-group w-50">
                 <input type="text" name="search" class="form-control search-input" placeholder="Tìm tên sản phẩm, hãng..." value="<?= htmlspecialchars($currentSearch) ?>">
@@ -132,15 +133,49 @@ $viewContent = ob_get_clean();
 
     <main class="container my-4" id="shop-section">
         <?php if($controllerName === 'ProductController' && ($action == 'index' || $action == 'list')): ?>
-            <div class="d-flex flex-wrap gap-2 mb-4 filter-container bg-white p-3 rounded shadow-sm border border-light">
-                <a href="<?= BASE_URL . $currentRoute ?>?sort=<?= $currentSort ?>#shop-section" class="filter-btn <?= empty($currentBrand) ? 'active text-primary' : '' ?> fw-bold text-decoration-none"><i class="fas fa-filter"></i> Lọc</a>
+            
+            <div id="mainPromoCarousel" class="carousel slide custom-carousel mb-4 shadow rounded overflow-hidden" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active" data-bs-interval="15000">
+                        <img src="<?= BASE_URL ?>public/images/Carousel-image-1.png" class="d-block w-100" alt="Banner 1" onerror="this.src='https://via.placeholder.com/1200x300/0d6efd/ffffff?text=Banner+Khuyen+Mai+1'">
+                    </div>
+                    <div class="carousel-item" data-bs-interval="15000">
+                        <img src="<?= BASE_URL ?>public/images/Carousel-image-2.png" class="d-block w-100" alt="Banner 2" onerror="this.src='https://via.placeholder.com/1200x300/6c757d/ffffff?text=Banner+Khuyen+Mai+2'">
+                    </div>
+                    <div class="carousel-item" data-bs-interval="15000">
+                        <img src="<?= BASE_URL ?>public/images/Carousel-image-3.png" class="d-block w-100" alt="Banner 3" onerror="this.src='https://via.placeholder.com/1200x300/198754/ffffff?text=Banner+Khuyen+Mai+3'">
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#mainPromoCarousel" data-bs-slide="prev" aria-label="Previous">
+                    <span class="carousel-control-prev-icon rounded-circle p-3" style="background-color: rgba(0,0,0,0.5);" aria-hidden="true"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#mainPromoCarousel" data-bs-slide="next" aria-label="Next">
+                    <span class="carousel-control-next-icon rounded-circle p-3" style="background-color: rgba(0,0,0,0.5);" aria-hidden="true"></span>
+                </button>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-4 filter-container bg-white p-3 rounded shadow-sm border border-light">
+                <a href="<?= BASE_URL . $currentRoute ?>?sort=<?= $currentSort ?>#shop-section" 
+                   class="filter-btn border border-secondary-subtle rounded px-3 py-1 <?= empty($currentBrand) ? 'active bg-light text-primary' : 'text-dark' ?> fw-bold text-decoration-none">
+                    <i class="fas fa-filter"></i> Lọc
+                </a>
+                
                 <?php 
-                $brands = ['SAMSUNG' => '', 'iPhone' => '', 'xiaomi' => '', 'OPPO' => 'text-success', 'vivo' => 'text-primary', 'realme' => 'text-warning', 'HONOR' => '', 'motorola' => ''];
+                $brands = [
+                    'SAMSUNG' => 'text-dark', 'iPhone' => 'text-dark', 'xiaomi' => 'text-dark', 
+                    'OPPO' => 'text-success', 'vivo' => 'text-primary', 'realme' => 'text-warning', 
+                    'HONOR' => 'text-dark', 'motorola' => 'text-dark'
+                ];
+                
                 foreach ($brands as $brandName => $colorClass): 
-                    $isActive = ($currentBrand === $brandName) ? 'active text-primary' : ''; 
+                    $isActive = ($currentBrand === $brandName) ? 'active border-primary bg-primary text-white' : 'border-secondary-subtle bg-white'; 
+                    $finalColor = ($currentBrand === $brandName) ? 'text-white' : $colorClass;
+                    $searchParam = !empty($currentSearch) ? "&search=" . urlencode($currentSearch) : "";
                 ?>
-                    <?php $searchParam = !empty($currentSearch) ? "&search=" . urlencode($currentSearch) : ""; ?>
-                    <a href="<?= BASE_URL . $currentRoute ?>?brand=<?= urlencode($brandName) ?>&sort=<?= $currentSort ?><?= $searchParam ?>#shop-section" class="filter-btn fw-bold text-decoration-none <?= $colorClass ?> <?= $isActive ?>"><?= htmlspecialchars($brandName) ?></a>
+                    <a href="<?= BASE_URL . $currentRoute ?>?brand=<?= urlencode($brandName) ?>&sort=<?= $currentSort ?><?= $searchParam ?>#shop-section" 
+                       class="filter-btn border rounded px-3 py-1 fw-bold text-decoration-none <?= $finalColor ?> <?= $isActive ?>">
+                        <?= htmlspecialchars($brandName) ?>
+                    </a>
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
@@ -148,7 +183,15 @@ $viewContent = ob_get_clean();
         <?= $viewContent; ?>
     </main>
 
+    <footer class="footer-main mt-5 border-top bg-white pt-4 pb-3">
+        <div class="container text-center text-muted" style="font-size: 13px;">
+            <p class="mb-1">© 2024. Cửa hàng điện thoại. Dự án PHP MVC trên Laragon.</p>
+        </div>
+    </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="<?= BASE_URL ?>public/js/script.js?v=<?= time() ?>"></script>
+    
     <script>
     document.addEventListener("DOMContentLoaded", function() {
         var hash = window.location.hash;
