@@ -23,13 +23,11 @@
                     <tr>
                         <td>
                             <div class="d-flex align-items-center gap-3">
-                                <img src="<?= BASE_URL . htmlspecialchars($item['image_url']) ?>" alt="<?= htmlspecialchars($item['name']) ?>" class="img-thumbnail border-0" style="width: 80px; height: 80px; object-fit: contain;">
+                                <img src="<?= BASE_URL . htmlspecialchars($item['image_url']) ?>" class="img-thumbnail border-0" style="width: 80px; height: 80px; object-fit: contain;">
                                 <h6 class="mb-0 fw-bold text-dark"><?= htmlspecialchars($item['name']) ?></h6>
                             </div>
                         </td>
-                        <td class="text-center text-danger fw-bold">
-                            <?= number_format($item['price'], 0, ',', '.') ?> ₫
-                        </td>
+                        <td class="text-center text-danger fw-bold"><?= number_format($item['price'], 0, ',', '.') ?> ₫</td>
                         <td class="text-center">
                             <div class="d-flex justify-content-center align-items-center gap-2">
                                 <a href="<?= BASE_URL ?>Cart/update/<?= $item['id'] ?>/decrease" class="btn btn-sm btn-outline-secondary fw-bold px-2">-</a>
@@ -37,13 +35,15 @@
                                 <a href="<?= BASE_URL ?>Cart/update/<?= $item['id'] ?>/increase" class="btn btn-sm btn-outline-secondary fw-bold px-2">+</a>
                             </div>
                         </td>
-                        <td class="text-center text-danger fw-bold fs-5">
-                            <?= number_format($subtotal, 0, ',', '.') ?> ₫
-                        </td>
+                        <td class="text-center text-danger fw-bold fs-5"><?= number_format($subtotal, 0, ',', '.') ?> ₫</td>
                         <td class="text-center">
-                            <a href="<?= BASE_URL ?>Cart/remove/<?= $item['id'] ?>" class="btn btn-outline-danger btn-sm" onclick="return confirm('Xóa sản phẩm này khỏi giỏ hàng?');">
+                            <button type="button" class="btn btn-outline-danger btn-sm" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#deleteCartModal" 
+                                    data-id="<?= $item['id'] ?>" 
+                                    data-name="<?= htmlspecialchars($item['name']) ?>">
                                 <i class="fas fa-trash"></i>
-                            </a>
+                            </button>
                         </td>
                     </tr>
                     <?php endforeach; ?>
@@ -55,11 +55,9 @@
             <a href="<?= BASE_URL ?>Product/list" class="btn btn-outline-secondary mb-3 mb-md-0 fw-bold">
                 <i class="fas fa-arrow-left me-2"></i>Tiếp tục mua sắm
             </a>
-            
             <div class="text-md-end text-center bg-light p-4 rounded shadow-sm border">
                 <p class="text-muted mb-1 fs-6">Tổng thanh toán:</p>
                 <h2 class="text-danger fw-bold mb-3"><?= number_format($total, 0, ',', '.') ?> ₫</h2>
-                
                 <a href="<?= BASE_URL ?>Order/checkout" class="btn btn-danger btn-lg px-5 rounded-pill shadow fw-bold w-100 text-decoration-none">
                     TIẾN HÀNH ĐẶT HÀNG
                 </a>
@@ -67,11 +65,40 @@
         </div>
     <?php else: ?>
         <div class="text-center py-5">
-            <i class="fas fa-box-open text-muted mb-3" style="font-size: 64px;"></i>
-            <h4 class="text-muted mb-4">Giỏ hàng của bạn đang trống.</h4>
-            <a href="<?= BASE_URL ?>Product/list" class="btn btn-primary btn-lg px-4 rounded-pill fw-bold shadow-sm">
-                <i class="fas fa-arrow-left me-2"></i>Quay lại mua sắm
-            </a>
+            <h4 class="text-muted mb-4">Giỏ hàng trống.</h4>
+            <a href="<?= BASE_URL ?>Product/list" class="btn btn-primary rounded-pill px-4">Quay lại mua sắm</a>
         </div>
     <?php endif; ?>
 </div>
+
+<div class="modal fade" id="deleteCartModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title fw-bold">Xác nhận xóa</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body py-4 text-center">
+        <p>Bạn muốn xóa sản phẩm này khỏi giỏ hàng?</p>
+        <p class="fw-bold text-danger fs-5" id="deleteCartProductName"></p>
+      </div>
+      <div class="modal-footer justify-content-center bg-light">
+        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Hủy</button>
+        <a href="#" id="confirmDeleteCartBtn" class="btn btn-danger px-4">Đồng ý Xóa</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var deleteCartModal = document.getElementById('deleteCartModal');
+    deleteCartModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var pId = button.getAttribute('data-id');
+        var pName = button.getAttribute('data-name');
+        document.getElementById('deleteCartProductName').textContent = pName;
+        document.getElementById('confirmDeleteCartBtn').href = '<?= BASE_URL ?>Cart/remove/' + pId;
+    });
+});
+</script>
