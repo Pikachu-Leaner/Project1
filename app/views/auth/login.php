@@ -9,10 +9,11 @@
                     </div>
 
                     <?php if (isset($error)): ?>
-                        <div class="alert alert-danger fw-bold small"><?= $error ?></div>
+                        <div class="alert alert-danger fw-bold small"><?= htmlspecialchars($error) ?></div>
                     <?php endif; ?>
+                    
                     <?php if (isset($success)): ?>
-                        <div class="alert alert-success fw-bold small"><?= $success ?></div>
+                        <div class="alert alert-success fw-bold small"><?= htmlspecialchars($success) ?></div>
                     <?php endif; ?>
 
                     <form action="<?= BASE_URL ?>Auth/login" method="POST">
@@ -34,9 +35,9 @@
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="remember" id="rememberMe">
-                                <label class="form-check-label small" for="rememberMe">Nhớ tài khoản</label>
+                                <label class="form-check-label small text-muted" for="rememberMe">Nhớ tài khoản</label>
                             </div>
-                            <a href="#" class="small text-decoration-none text-primary fw-bold">Quên mật khẩu?</a>
+                            <a href="<?= BASE_URL ?>Auth/forgot_password" class="small text-decoration-none text-primary fw-bold">Quên mật khẩu?</a>
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100 fw-bold rounded-pill py-2">ĐĂNG NHẬP</button>
@@ -50,18 +51,3 @@
         </div>
     </div>
 </div>
-
-<script>
-// JS Bật/Tắt mật khẩu
-document.getElementById('togglePassword').addEventListener('click', function () {
-    const pwd = document.getElementById('passwordInput');
-    const icon = document.getElementById('eyeIcon');
-    if (pwd.type === 'password') {
-        pwd.type = 'text';
-        icon.classList.replace('fa-eye-slash', 'fa-eye');
-    } else {
-        pwd.type = 'password';
-        icon.classList.replace('fa-eye', 'fa-eye-slash');
-    }
-});
-</script>
