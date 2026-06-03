@@ -96,13 +96,41 @@ $viewContent = ob_get_clean();
             </form>
 
             <div class="d-flex align-items-center gap-3">
-                <a href="<?= BASE_URL ?>Order/history" class="text-dark text-decoration-none fs-7 fw-bold"><i class="fas fa-history me-1"></i> Lịch sử đơn hàng</a>
                 <a href="<?= BASE_URL ?>Cart/index" class="btn btn-dark text-white rounded-pill px-3 fs-7 shadow-sm position-relative">
                     <i class="fas fa-shopping-cart me-1"></i> Giỏ hàng
                     <?php if ($cartCount > 0): ?>
                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"><?= $cartCount ?></span>
                     <?php endif; ?>
                 </a>
+
+                <div class="dropdown">
+                    <button class="btn btn-light dropdown-toggle border shadow-sm rounded-pill px-3 d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
+                        <?php if(isset($_SESSION['user_id'])): ?>
+                            <img src="<?= BASE_URL . htmlspecialchars($_SESSION['user_avatar'] ?? 'public/images/default-avatar.png') ?>" class="rounded-circle" style="width: 25px; height: 25px; object-fit: cover;">
+                            <span class="fw-bold fs-7"><?= htmlspecialchars($_SESSION['user_name']) ?></span>
+                        <?php else: ?>
+                            <i class="fas fa-user-circle fs-5 text-secondary"></i>
+                            <span class="fw-bold fs-7 text-secondary">Tài khoản</span>
+                        <?php endif; ?>
+                    </button>
+                    
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                        <?php if(isset($_SESSION['user_id'])): ?>
+                            <?php if($_SESSION['user_role'] === 'Admin'): ?>
+                                <li><a class="dropdown-item fw-bold text-danger" href="<?= BASE_URL ?>Admin/dashboard"><i class="fas fa-chart-line me-2"></i>Admin Panel</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                            <?php endif; ?>
+                            
+                            <li><a class="dropdown-item" href="<?= BASE_URL ?>User/profile"><i class="fas fa-id-badge me-2 text-primary"></i>Hồ sơ cá nhân</a></li>
+                            <li><a class="dropdown-item" href="<?= BASE_URL ?>Order/history"><i class="fas fa-box me-2 text-success"></i>Đơn hàng của tôi</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger fw-bold" href="<?= BASE_URL ?>Auth/logout"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
+                        <?php else: ?>
+                            <li><a class="dropdown-item fw-bold" href="<?= BASE_URL ?>Auth/login"><i class="fas fa-sign-in-alt me-2 text-primary"></i>Đăng nhập</a></li>
+                            <li><a class="dropdown-item" href="<?= BASE_URL ?>Auth/register"><i class="fas fa-user-plus me-2 text-success"></i>Đăng ký mới</a></li>
+                        <?php endif; ?>
+                    </ul>
+                </div>
             </div>
         </div>
     </header>
@@ -155,7 +183,6 @@ $viewContent = ob_get_clean();
             </div>
 
             <div class="d-flex flex-wrap align-items-center gap-2 mb-4 filter-container bg-white p-3 rounded shadow-sm border border-light">
-                
                 <a href="<?= BASE_URL . $currentRoute ?>?sort=<?= $currentSort ?>#shop-section" 
                    class="filter-btn border border-secondary-subtle rounded px-3 py-1 <?= empty($currentBrand) ? 'active bg-light text-primary' : 'text-dark' ?> fw-bold text-decoration-none">
                     <i class="fas fa-filter"></i> Lọc
@@ -169,7 +196,6 @@ $viewContent = ob_get_clean();
                 ];
                 
                 foreach ($brands as $brandName => $colorClass): 
-                    // Thiết lập CSS khi đang chọn hoặc không chọn
                     $isActive = ($currentBrand === $brandName) ? 'active border-primary bg-primary text-white' : 'border-secondary-subtle bg-white'; 
                     $finalColor = ($currentBrand === $brandName) ? 'text-white' : $colorClass;
                     $searchParam = !empty($currentSearch) ? "&search=" . urlencode($currentSearch) : "";
