@@ -15,7 +15,15 @@ if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
     $cartCount = count(array_keys($_SESSION['cart']));
 }
 
-$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
+// ==========================================
+// FIX MIXED CONTENT CHO RENDER.COM
+// ==========================================
+if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+    $protocol = 'https';
+} else {
+    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
+}
+
 $host = $_SERVER['HTTP_HOST'];
 $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])); 
 if ($scriptDir === '/') { $scriptDir = ''; }
@@ -80,16 +88,21 @@ $viewContent = ob_get_clean();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smartphone Store</title>
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="<?= BASE_URL ?>public/css/style.css?v=<?= time() ?>">
 </head>
 <body class="bg-light">
 
+    <!-- HEADER CHÍNH -->
     <header class="header-main py-2 shadow-sm border-bottom bg-white">
         <div class="container d-flex align-items-center justify-content-between">
             <a href="<?= BASE_URL ?>"><img src="<?= BASE_URL ?>public/images/Store-image.png" class="store-logo" style="height: 40px;" alt="Logo" onerror="this.src='https://via.placeholder.com/150x40/ffd400/333333?text=Logo'"></a>
             
+            <!-- FORM TÌM KIẾM -->
             <form action="<?= BASE_URL ?>Product/list" method="GET" class="input-group w-50">
                 <input type="text" name="search" class="form-control search-input" placeholder="Tìm tên sản phẩm, hãng..." value="<?= htmlspecialchars($currentSearch) ?>">
                 <button class="btn search-btn" type="submit" style="border: 1px solid #ced4da; border-left: none;"><i class="fas fa-search text-muted"></i></button>
@@ -103,6 +116,7 @@ $viewContent = ob_get_clean();
                     <?php endif; ?>
                 </a>
 
+                <!-- DROPDOWN MENU TÀI KHOẢN -->
                 <div class="dropdown">
                     <button class="btn btn-light dropdown-toggle border shadow-sm rounded-pill px-3 d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown">
                         <?php if(isset($_SESSION['user_id'])): ?>
@@ -116,16 +130,19 @@ $viewContent = ob_get_clean();
                     
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
                         <?php if(isset($_SESSION['user_id'])): ?>
+                            <!-- NẾU LÀ ADMIN THÌ HIỆN NÚT VÀO DASHBOARD -->
                             <?php if($_SESSION['user_role'] === 'Admin'): ?>
                                 <li><a class="dropdown-item fw-bold text-danger" href="<?= BASE_URL ?>Admin/dashboard"><i class="fas fa-chart-line me-2"></i>Admin Panel</a></li>
                                 <li><hr class="dropdown-divider"></li>
                             <?php endif; ?>
                             
+                            <!-- MENU CHO NGƯỜI DÙNG ĐÃ ĐĂNG NHẬP -->
                             <li><a class="dropdown-item" href="<?= BASE_URL ?>User/profile"><i class="fas fa-id-badge me-2 text-primary"></i>Hồ sơ cá nhân</a></li>
                             <li><a class="dropdown-item" href="<?= BASE_URL ?>Order/history"><i class="fas fa-box me-2 text-success"></i>Đơn hàng của tôi</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item text-danger fw-bold" href="<?= BASE_URL ?>Auth/logout"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
                         <?php else: ?>
+                            <!-- MENU CHO KHÁCH (CHƯA ĐĂNG NHẬP) -->
                             <li><a class="dropdown-item fw-bold" href="<?= BASE_URL ?>Auth/login"><i class="fas fa-sign-in-alt me-2 text-primary"></i>Đăng nhập</a></li>
                             <li><a class="dropdown-item" href="<?= BASE_URL ?>Auth/register"><i class="fas fa-user-plus me-2 text-success"></i>Đăng ký mới</a></li>
                         <?php endif; ?>
@@ -135,6 +152,7 @@ $viewContent = ob_get_clean();
         </div>
     </header>
 
+    <!-- THANH NAVIGATION ĐEN -->
     <nav class="nav-main shadow bg-dark text-white">
         <div class="container">
             <ul class="nav nav-pills justify-content-start flex-nowrap overflow-x-auto overflow-y-hidden py-2">
@@ -162,6 +180,7 @@ $viewContent = ob_get_clean();
     <main class="container my-4" id="shop-section">
         <?php if($controllerName === 'ProductController' && ($action == 'index' || $action == 'list')): ?>
             
+            <!-- CAROUSEL BANNER VỚI ẢNH DỰ PHÒNG -->
             <div id="mainPromoCarousel" class="carousel slide custom-carousel mb-4 shadow rounded overflow-hidden" data-bs-ride="carousel">
                 <div class="carousel-inner">
                     <div class="carousel-item active" data-bs-interval="15000">
@@ -182,6 +201,7 @@ $viewContent = ob_get_clean();
                 </button>
             </div>
 
+            <!-- THANH BỘ LỌC HÃNG -->
             <div class="d-flex flex-wrap align-items-center gap-2 mb-4 filter-container bg-white p-3 rounded shadow-sm border border-light">
                 <a href="<?= BASE_URL . $currentRoute ?>?sort=<?= $currentSort ?>#shop-section" 
                    class="filter-btn border border-secondary-subtle rounded px-3 py-1 <?= empty($currentBrand) ? 'active bg-light text-primary' : 'text-dark' ?> fw-bold text-decoration-none">
@@ -208,6 +228,7 @@ $viewContent = ob_get_clean();
             </div>
         <?php endif; ?>
 
+        <!-- NỘI DUNG VIEW (Sản phẩm, Giỏ hàng, v.v...) -->
         <?= $viewContent; ?>
 
     </main>
@@ -218,9 +239,12 @@ $viewContent = ob_get_clean();
         </div>
     </footer>
 
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS cho các tính năng -->
     <script src="<?= BASE_URL ?>public/js/script.js?v=<?= time() ?>"></script>
     
+    <!-- Smooth Scroll Logic cho Anchor Tags -->
     <script>
     document.addEventListener("DOMContentLoaded", function() {
         var hash = window.location.hash;

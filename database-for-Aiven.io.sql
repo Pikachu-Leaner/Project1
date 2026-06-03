@@ -101,4 +101,4 @@ INSERT INTO products (name, category_id, brand, price, old_price, image_url, det
 -- Email đăng nhập: admin@store.com
 -- Mật khẩu đăng nhập: admin123 (Đã được mã hóa an toàn bằng thuật toán BCRYPT mặc định của PHP)
 INSERT INTO users (full_name, email, password, role, is_verified) 
-VALUES ('System Admin', 'admin@store.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin', TRUE);
+VALUES ('System Admin', 'admin@store.com', '$2y$10$UpMQCcir.e49qe4F.t2DnexdijBZZjH9JKCYjkYlAMvLjCnPvwNjW', 'Admin', TRUE);
