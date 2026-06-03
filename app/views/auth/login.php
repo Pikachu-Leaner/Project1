@@ -25,9 +25,9 @@
                         <div class="mb-3">
                             <label class="form-label fw-bold small">Mật khẩu</label>
                             <div class="input-group">
-                                <input type="password" name="password" id="passwordInput" class="form-control" required placeholder="Nhập mật khẩu...">
-                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
-                                    <i class="fas fa-eye-slash" id="eyeIcon"></i>
+                                <input type="password" name="password" id="loginPasswordInput" class="form-control" required placeholder="Nhập mật khẩu...">
+                                <button class="btn btn-outline-secondary" type="button" id="loginTogglePasswordBtn">
+                                    <i class="fas fa-eye-slash" id="loginEyeIcon"></i>
                                 </button>
                             </div>
                         </div>
@@ -51,3 +51,25 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const toggleBtn = document.getElementById('loginTogglePasswordBtn');
+    const pwdInput = document.getElementById('loginPasswordInput');
+    const eyeIcon = document.getElementById('loginEyeIcon');
+    
+    if(toggleBtn && pwdInput && eyeIcon) {
+        toggleBtn.addEventListener('click', function () {
+            if (pwdInput.type === 'password') {
+                pwdInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            } else {
+                pwdInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            }
+        });
+    }
+});
+</script>
