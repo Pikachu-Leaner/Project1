@@ -31,7 +31,7 @@ $urlArray = array_values($urlArray);
 $currentBrand = isset($_GET['brand']) ? $_GET['brand'] : '';
 $currentCat = isset($_GET['category']) ? $_GET['category'] : '';
 $currentSort = isset($_GET['sort']) ? $_GET['sort'] : 'noi_bat';
-$currentSearch = isset($_GET['search']) ? $_GET['search'] : '';
+$currentSearch = isset($_GET['search']) ? trim($_GET['search']) : '';
 $currentRoute = !empty($url) ? $url : 'Product/list';
 
 $controllerName = isset($urlArray[0]) && $urlArray[0] !== '' ? ucfirst($urlArray[0]) . 'Controller' : 'ProductController'; 
@@ -155,6 +155,7 @@ $viewContent = ob_get_clean();
             </div>
 
             <div class="d-flex flex-wrap align-items-center gap-2 mb-4 filter-container bg-white p-3 rounded shadow-sm border border-light">
+                
                 <a href="<?= BASE_URL . $currentRoute ?>?sort=<?= $currentSort ?>#shop-section" 
                    class="filter-btn border border-secondary-subtle rounded px-3 py-1 <?= empty($currentBrand) ? 'active bg-light text-primary' : 'text-dark' ?> fw-bold text-decoration-none">
                     <i class="fas fa-filter"></i> Lọc
@@ -168,6 +169,7 @@ $viewContent = ob_get_clean();
                 ];
                 
                 foreach ($brands as $brandName => $colorClass): 
+                    // Thiết lập CSS khi đang chọn hoặc không chọn
                     $isActive = ($currentBrand === $brandName) ? 'active border-primary bg-primary text-white' : 'border-secondary-subtle bg-white'; 
                     $finalColor = ($currentBrand === $brandName) ? 'text-white' : $colorClass;
                     $searchParam = !empty($currentSearch) ? "&search=" . urlencode($currentSearch) : "";
@@ -181,6 +183,7 @@ $viewContent = ob_get_clean();
         <?php endif; ?>
 
         <?= $viewContent; ?>
+
     </main>
 
     <footer class="footer-main mt-5 border-top bg-white pt-4 pb-3">
@@ -198,7 +201,9 @@ $viewContent = ob_get_clean();
         if(hash) {
             setTimeout(function() {
                 var targetSection = document.querySelector(hash);
-                if(targetSection) { targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+                if(targetSection) { 
+                    targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' }); 
+                }
             }, 50);
         }
     });
