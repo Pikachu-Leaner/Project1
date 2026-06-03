@@ -19,8 +19,13 @@ class AuthController {
     // ĐĂNG NHẬP
     // ==========================================
     public function login() {
+        // Hứng thông báo từ các trang khác chuyển về
         if (isset($_GET['reset']) && $_GET['reset'] == 'success') {
             $success = "Đổi mật khẩu thành công! Vui lòng đăng nhập lại.";
+        }
+        // ĐÃ FIX: Hứng thông báo khi xác thực OTP thành công
+        if (isset($_GET['verify']) && $_GET['verify'] == 'success') {
+            $success = "Xác thực tài khoản thành công! Bạn có thể đăng nhập ngay.";
         }
         
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -105,25 +110,37 @@ class AuthController {
     // ==========================================
     // XÁC THỰC OTP KHI ĐĂNG KÝ
     // ==========================================
+    // ĐÃ FIX: Chuyển hướng về trang Đăng nhập khi xác thực thành công
     public function verify_otp() {
-        if (!isset($_SESSION['temp_email'])) { header('Location: ' . BASE_URL . 'Auth/login'); exit; }
+        if (!isset($_SESSION['temp_email']) && $_SERVER['REQUEST_METHOD'] != 'POST') { 
+            header('Location: ' . BASE_URL . 'Auth/login'); 
+            exit; 
+        }
         
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $otp = trim($_POST['otp']);
-            $email = $_SESSION['temp_email'];
+            $email = $_SESSION['temp_email'] ?? '';
 
-            $stmt = $this->conn->prepare("SELECT * FROM users WHERE email = ? AND otp_code = ?");
-            $stmt->execute([$email, $otp]);
-            $user = $stmt->fetch();
-
-            if ($user) {
-                $upd = $this->conn->prepare("UPDATE users SET is_verified = TRUE, otp_code = NULL WHERE id = ?");
-                $upd->execute([$user['id']]);
-                unset($_SESSION['temp_email']);
-                unset($_SESSION['debug_otp']);
-                $success = "Xác thực thành công! Bạn có thể đăng nhập.";
+            if (empty($email)) {
+                $error = "Phiên làm việc hết hạn. Vui lòng đăng nhập lại.";
             } else {
-                $error = "Mã OTP không hợp lệ!";
+                $stmt = $this->conn->prepare("SELECT * FROM users WHERE email = ? AND otp_code = ?");
+                $stmt->execute([$email, $otp]);
+                $user = $stmt->fetch();
+
+                if ($user) {
+                    $upd = $this->conn->prepare("UPDATE users SET is_verified = TRUE, otp_code = NULL WHERE id = ?");
+                    $upd->execute([$user['id']]);
+                    
+                    unset($_SESSION['temp_email']);
+                    unset($_SESSION['debug_otp']);
+                    
+                    // CHUYỂN HƯỚNG KÈM THÔNG BÁO THÀNH CÔNG
+                    header('Location: ' . BASE_URL . 'Auth/login?verify=success');
+                    exit;
+                } else {
+                    $error = "Mã OTP không hợp lệ!";
+                }
             }
         }
         include 'app/views/auth/verify_otp.php';
@@ -216,6 +233,9 @@ class AuthController {
     // HỖ TRỢ REMEMBER ME
     // ==========================================
     private function authorizeFromCookie() {
+        // ĐÃ FIX: Tránh lỗi cảnh báo nếu Cookie không tồn tại
+        if (!isset($_COOKIE['remember_token'])) return;
+        
         $token = $_COOKIE['remember_token'];
         $stmt = $this->conn->prepare("SELECT * FROM users WHERE remember_token = ? AND is_active = 1");
         $stmt->execute([$token]);
